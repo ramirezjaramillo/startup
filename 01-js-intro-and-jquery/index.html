@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Lorem Ipsum</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/custom.css" rel ="stylesheet">
+    <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+  </head>
+  <body>
+    <header>
+	    <nav>
+	      <ul>
+	        <li>Menu Item 1</li>
+          <li>Menu Item 2</li>
+		  </ul>
+	    </nav>
+	  </header>
+    <section hidden class="hidden">
+      <p>Hello world</p>
+      <div></div>
+    </section>
+    <button type="button" class="button">Button</button>
+    <input type="text" name="alias" class="alias" value="" />
+    <p><input type="text" name="search_artist" class="search-artist" value="" placeholder="Type an artist to search for" size="30" /></p>
+    <section class="albums-section">
+    </section>
+    <section>
+      <h2>About</h2>
+      <p>Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.</p>
+    </section>
+    <footer>
+      <p>Copyright 2015</p>
+    </footer>
+    <script>
+      var obj_jscript = {
+        init: function() {
+          $(".hidden").fadeIn(3000);
+          $(".alias").focus();
+          $('.button').on('click',function(e) {
+            e.preventDefault();
+            obj_jscript.getYourName();
+          });
+          $('.search-artist').on('focusout',function(e) {
+            e.preventDefault();
+            var searchArtist = $('.search-artist').val();
+            obj_jscript.loadArtistAlbums( searchArtist );
+          });
+        },
+        getYourName: function() {
+          var requestURL = "http://bootcamp.aws.af.cm/welcome/juan";
+          $(".hidden div").html( "" );
+          $.getJSON( requestURL, function( data ) {
+          })
+            .done( function( data ) {
+              $(".hidden div").append( "<span>" + data.response + "</span>" );
+              obj_jscript.highlightName();
+              obj_jscript.loadArtistAlbums( "Rolling Stones" );
+              return false;
+            })
+            .fail( function() {
+              $(".hidden div").append( "Request Error" );
+              $(".hidden").addClass( "error" );
+            });
+        },
+        highlightName: function() {
+          $(".hidden div span").addClass( "highlight" );
+        },
+        loadArtistAlbums: function( strArtist ) {
+          var searchArtist = strArtist;
+          var searchType = "album"
+          var requestURL = "https://api.spotify.com/v1/search?q="+ searchArtist + "&type=" + searchType;
+          $(".albums-section").html( "" );
+          $.getJSON( requestURL, function( data ) {
+          })
+            .done( function( data ) {
+              var htmlAlbumInfo = "";
+              $.each( data.albums.items, function ( i, item ) {
+                htmlAlbumInfo += '<article><header>';
+                htmlAlbumInfo += '<h2>' + item.name + '</h2>';
+                htmlAlbumInfo += '<p>' + item.album_type + '</p></header>';
+                htmlAlbumInfo += '<img src="'+ this.images[0].url +'" height="300" width="300" />';
+                htmlAlbumInfo += '<p><a href="' + this.external_urls.spotify + '">Listen on Spotify</a></p></article>';
+              });
+              $(".albums-section").append( htmlAlbumInfo );
+              return false;
+            })
+            .fail( function() {
+              alert ( 'error' );
+            });
+        }
+
+      }
+
+      $(document).ready(function() {
+        obj_jscript.init();
+      })
+    </script>
+  </body>
+
+</html>
